@@ -2,6 +2,7 @@
   'use strict';
 
   var STORAGE_KEY = '_tcy8';
+  var TFA_KEY = 'TFAToken';
 
   angular.module('c8y.sdk').provider('c8yCumulocity', [
     'info',
@@ -27,6 +28,7 @@
       var token = $window.localStorage.getItem(STORAGE_KEY) ||
         $window.sessionStorage.getItem(STORAGE_KEY);
       info.token = token;
+      info.tfatoken = $window.localStorage.getItem(TFA_KEY);
     }
 
     function setupAfterLogin() {
