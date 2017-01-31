@@ -223,7 +223,8 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
 
   return {
     subscribe: subscribe,
-    configure: configure
+    configure: configure,
+    cometd: cometd
   };
 
 }]);
