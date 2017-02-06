@@ -24,6 +24,7 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
       logLevel: 'info',
       requestHeaders: {
         Authorization: 'Basic ' + info.token,
+        tfatoken: info.tfatoken,
         UseXBasic: true
       },
       appendMessageTypeToURL: false
