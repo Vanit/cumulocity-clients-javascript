@@ -16,8 +16,7 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
 
   var cometd =  $.cometd,
     subscriptionMap = {},
-    path = 'cep/customnotifications',
-    pathNotifications = 'cep/notifications',
+    path = 'cep/notifications',
     url = c8yBase.url(path),
     cfg = {
       url: url,
@@ -31,10 +30,7 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
     },
     timeout = 570000,
     abortConnection,
-    onSubscribeListener,
-    debugNotificationsCfg = angular.copy(cfg);
-
-  debugNotificationsCfg.url = c8yBase.url(pathNotifications);
+    onSubscribeListener;
 
   cometd.unregisterTransport('websocket');
   cometd.registerExtension('acceptEmptyMessages', {
@@ -217,8 +213,14 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
    *   c8yNotifications.configure('debug');
    * </pre>
    */
-  function configure(type) {
-    var _cfg = angular.copy(type === 'debug' ? debugNotificationsCfg : cfg);
+  function configure() {
+    var _cfg = angular.extend(angular.copy(cfg), {
+      requestHeaders: {
+        Authorization: 'Basic ' + info.token,
+        tfatoken: info.tfatoken,
+        UseXBasic: true
+      }
+    });
     cometd.configure(_cfg);
   }
 
