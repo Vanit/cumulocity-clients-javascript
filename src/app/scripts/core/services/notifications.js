@@ -194,6 +194,12 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
     });
   }
 
+  function unsubscribe(subObj) {
+    if (subObj) {
+      cometd.unsubscribe(subObj);
+    }
+  }
+
   /**
    * @ngdoc function
    * @name configure
@@ -226,6 +232,7 @@ function ($rootScope, $q, $timeout, c8yBase, info) {
 
   return {
     subscribe: subscribe,
+    unsubscribe: unsubscribe,
     configure: configure,
     cometd: cometd
   };
