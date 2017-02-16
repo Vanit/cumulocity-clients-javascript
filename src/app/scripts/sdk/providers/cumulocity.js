@@ -144,6 +144,7 @@
 
     var result = {
       login: login,
+      tfaLogin: tfaLogin,
       logout: logout
     };
 

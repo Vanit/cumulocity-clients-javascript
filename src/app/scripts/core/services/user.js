@@ -494,6 +494,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     hasRole: hasRole,
     getDevicePermissions: getDevicePermissions,
     login: login,
+    tfaLogin: tfaLogin,
     logout: logout,
     isAdmin: isAdmin,
     isCurrentPassword: isCurrentPassword
