@@ -15,6 +15,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
   'use strict';
   var path = 'user/{tenant}/users',
     currentUserPath = 'user/currentUser',
+    tfaPinPath = 'user/pin',
     // userContentType = c8yBase.mimeType('user'),
     // usersContentType = c8yBase.mimeType('userCollection'),
     currentUser = null,
@@ -25,6 +26,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
       headers: c8yBase.contentHeaders('user', true)
     },
     TOKEN = '_tcy8';
+    TFA_TOKEN = 'TFAToken';
 
   function applyTenant(url, tenant) {
     return url.replace(/{tenant}/g, tenant);
@@ -386,10 +388,16 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
       .then(_.partial(confirmToken, remember));
   }
 
+  function tfaLogin(tenant, username, password, pin, remember) {
+    return $q.when(getToken(tenant, username, password))
+      .then(_.partial(confirmPin, remember, pin));
+  }
+
   function logout() {
     deleteToken();
     currentUser = null;
     info.token = null;
+    info.tfatoken = null;
   }
 
   function getToken(tenant, username, password) {
@@ -409,7 +417,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
       headers: getHeaders(_token)
     }).then(function (res) {
       info.token = _token;
-      setToken(_token, remember);
+      setToken(_token, null, remember);
       defer.resolve(res.data);
     }, function (res) {
       deleteToken();
@@ -419,17 +427,39 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     return defer.promise;
   }
 
-  function setToken(_token, remember) {
+  function confirmPin(remember, _token, _pin) {
+    var defer = $q.defer();
+
+    $http.post(c8yBase.url(tfaPinPath), {pin: _pin}, {
+      headers: getHeaders(_token)
+    }).then(function (res) {
+      info.token = _token;
+      info.tfatoken = res.headers('tfatoken');
+      setToken(_token, info.tfatoken, remember);
+      defer.resolve(res.data);
+    }, function (res) {
+      deleteToken();
+      defer.reject(res);
+    });
+
+    return defer.promise;
+  }
+
+  function setToken(_token, _tfatoken, remember) {
     if (remember) {
       window.localStorage.setItem(TOKEN, _token);
+      window.localStorage.setItem(TFA_TOKEN, _tfatoken);
     } else {
       window.sessionStorage.setItem(TOKEN, _token);
+      window.sessionStorage.setItem(TFA_TOKEN, _tfatoken);
     }
   }
 
   function deleteToken() {
     window.localStorage.removeItem(TOKEN);
+    window.localStorage.removeItem(TFA_TOKEN);
     window.sessionStorage.removeItem(TOKEN);
+    window.sessionStorage.removeItem(TFA_TOKEN);
   }
 
   function isAdmin(user) {
