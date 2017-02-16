@@ -426,7 +426,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     return defer.promise;
   }
 
-  function confirmPin(remember, _token, _pin) {
+  function confirmPin(remember, _pin, _token) {
     var defer = $q.defer();
 
     $http.post(c8yBase.url(tfaPinPath), {pin: _pin}, {
