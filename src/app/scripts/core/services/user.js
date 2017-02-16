@@ -408,16 +408,15 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     );
   }
 
-  function confirmToken(remember, _token) {
-    info.token = _token;
-
+  function confirmToken(remember, _token, _tfa) {
     var defer = $q.defer();
 
     $http.get(c8yBase.url(currentUserPath), {
-      headers: getHeaders(_token)
+      headers: getHeaders(_token, _tfa)
     }).then(function (res) {
       info.token = _token;
-      setToken(_token, null, remember);
+      info.tfatoken = _tfa;
+      setToken(_token, _tfa, remember);
       defer.resolve(res.data);
     }, function (res) {
       deleteToken();
@@ -433,10 +432,8 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     $http.post(c8yBase.url(tfaPinPath), {pin: _pin}, {
       headers: getHeaders(_token)
     }).then(function (res) {
-      info.token = _token;
-      info.tfatoken = res.headers('tfatoken');
-      setToken(_token, info.tfatoken, remember);
-      defer.resolve(res.data);
+      var _tfa = res.headers('tfatoken');
+      defer.resolve(confirmToken(remember, _token, _tfa));
     }, function (res) {
       deleteToken();
       defer.reject(res);
@@ -469,13 +466,18 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     return admin;
   }
 
-  function getHeaders(token) {
-    var t = token || info.token;
-    return {
-      Authorization: 'Basic ' + t,
+  function getHeaders(token, tfa) {
+    var headers = {
+      Authorization: 'Basic ' + token,
       UseXBasic: true,
       Accept: 'application/vnd.com.nsn.cumulocity.user+json;'
     };
+
+    if (tfa) {
+      headers.tfatoken = tfa;
+    }
+
+    return headers;
   }
 
   return {
