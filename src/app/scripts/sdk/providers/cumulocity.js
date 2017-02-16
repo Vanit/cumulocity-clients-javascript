@@ -118,6 +118,19 @@
       });
     }
 
+    function tfaLogin(tenant, user, password, pin, remember) {
+      tenant = tenant || getters.getTenant();
+      return c8yUser.tfaLogin(
+        tenant,
+        user,
+        password,
+        pin,
+        remember
+      ).then(setUser).then(function () {
+        $rootScope.$emit('c8y.api.login');
+      });
+    }
+
     function setUser(user) {
       var c8y = $rootScope.c8y = $rootScope.c8y || {};
       c8y.user = user;
