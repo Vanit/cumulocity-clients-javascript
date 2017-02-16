@@ -25,7 +25,7 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     configCurrentUser = {
       headers: c8yBase.contentHeaders('user', true)
     },
-    TOKEN = '_tcy8';
+    TOKEN = '_tcy8',
     TFA_TOKEN = 'TFAToken';
 
   function applyTenant(url, tenant) {
