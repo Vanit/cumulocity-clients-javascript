@@ -402,15 +402,21 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
 
   function confirmToken(remember, _token) {
     info.token = _token;
-    return $http.get(c8yBase.url(currentUserPath), {
+
+    var defer = $q.defer();
+
+    $http.get(c8yBase.url(currentUserPath), {
       headers: getHeaders(_token)
     }).then(function (res) {
       info.token = _token;
       setToken(_token, remember);
-      return res.data;
-    }, function () {
+      defer.resolve(res.data);
+    }, function (res) {
       deleteToken();
+      defer.reject(res);
     });
+
+    return defer.promise;
   }
 
   function setToken(_token, remember) {
