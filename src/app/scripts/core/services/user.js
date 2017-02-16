@@ -470,7 +470,8 @@ function ($http, $q, $timeout, c8yBase, info, c8yAuth) {
     var headers = {
       Authorization: 'Basic ' + token,
       UseXBasic: true,
-      Accept: 'application/vnd.com.nsn.cumulocity.user+json;'
+      Accept: 'application/vnd.com.nsn.cumulocity.user+json;',
+      'Content-Type': 'application/json'
     };
 
     if (tfa) {
