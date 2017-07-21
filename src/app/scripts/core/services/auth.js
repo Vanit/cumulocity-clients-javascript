@@ -82,7 +82,7 @@ angular.module('c8y.core')
       if (!config.headers.Authorization) {
         config.headers.Authorization = 'Basic ' + info.token;
       }
-      if (!config.headers.tfatoken && info.tfatoken !== null) {
+      if (!config.headers.tfatoken && info.tfatoken !== null && info.tfatoken !== 'undefined') {
         config.headers.tfatoken = info.tfatoken;
       }
       angular.extend(config.headers, {
